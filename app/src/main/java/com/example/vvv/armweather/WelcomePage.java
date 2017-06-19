@@ -15,7 +15,7 @@ public class WelcomePage extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.welcome);
-        new Handler().postDelayed(r, 2000);
+        new Handler().postDelayed(r,2000);
     }
 
     Runnable r = new Runnable() {
