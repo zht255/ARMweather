@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
             //判断蓝牙是否开启
             if(!blueToothAdapter.isEnabled()) {
                 TextView t = new TextView(this);
-                t.setText("是否允许开启蓝牙？");
+                t.setText("蓝牙未开启，是否允许开启蓝牙？");
                 t.setGravity(Gravity.CENTER);
                 t.setPadding(10,10,10,10);
                 AlertDialog.Builder ab = new AlertDialog.Builder(this);
