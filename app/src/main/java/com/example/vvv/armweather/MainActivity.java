@@ -10,10 +10,12 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import java.text.FieldPosition;
 import java.text.ParsePosition;
@@ -87,7 +89,28 @@ public class MainActivity extends AppCompatActivity {
         //判断是否有蓝牙功能
         if(blueToothAdapter != null){
             //判断蓝牙是否开启
-
+            if(!blueToothAdapter.isEnabled()) {
+                TextView t = new TextView(this);
+                t.setText("是否允许开启蓝牙？");
+                t.setGravity(Gravity.CENTER);
+                t.setPadding(10,10,10,10);
+                AlertDialog.Builder ab = new AlertDialog.Builder(this);
+                ab.setView(t);
+                ab.setPositiveButton("是", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        blueToothAdapter.enable();
+                    }
+                });
+                ab.setNegativeButton("否", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+               AlertDialog b = ab.create();
+                b.show();
+            }
         }
 
     }
