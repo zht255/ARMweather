@@ -16,10 +16,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.FieldPosition;
 import java.text.ParsePosition;
 import java.util.Date;
+
+import static android.widget.Toast.makeText;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -110,7 +113,13 @@ public class MainActivity extends AppCompatActivity {
                 });
                AlertDialog b = ab.create();
                 b.show();
+
+            }else{
+
             }
+        }else{
+            AlertDialog.Builder ad = new AlertDialog.Builder(this);
+            ad.setMessage("该设备不支持蓝牙功能！");
         }
 
     }
