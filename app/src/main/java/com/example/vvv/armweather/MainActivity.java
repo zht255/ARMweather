@@ -2,14 +2,22 @@ package com.example.vvv.armweather;
 
 
 import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.icu.lang.UCharacter;
 import android.icu.text.DateFormat;
 import android.icu.text.RelativeDateTimeFormatter;
 import android.icu.util.Calendar;
+import android.nfc.Tag;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.ThemedSpinnerAdapter;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,6 +36,39 @@ import static android.widget.Toast.makeText;
 public class MainActivity extends AppCompatActivity {
 
     private BluetoothAdapter blueToothAdapter;
+    @Override
+    public void onStart(){
+        super.onStart();
+        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+        registerReceiver(bluetoothreciever,filter);
+    }
+    private BroadcastReceiver bluetoothreciever = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if(action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)){
+                int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,BluetoothAdapter.ERROR);
+                if(state == BluetoothAdapter.STATE_ON){
+                    AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
+                    TextView t = new TextView(MainActivity.this);
+                    t.setText("蓝牙已开启，请重新扫描设备");
+                    t.setGravity(Gravity.CENTER_HORIZONTAL);
+                    t.setPadding(10,130,10,10);
+                    ad.setView(t);
+                    ad.setPositiveButton("×", new DialogInterface.OnClickListener(){
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    AlertDialog a = ad.create();
+                    a.show();
+                }
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
                 TextView t = new TextView(this);
                 t.setText("蓝牙未开启，是否允许开启蓝牙？");
                 t.setGravity(Gravity.CENTER);
-                t.setPadding(10,10,10,10);
+                t.setPadding(10,120,10,10);
                 AlertDialog.Builder ab = new AlertDialog.Builder(this);
                 ab.setView(t);
                 ab.setPositiveButton("是", new DialogInterface.OnClickListener() {
@@ -111,8 +152,21 @@ public class MainActivity extends AppCompatActivity {
                         dialog.dismiss();
                     }
                 });
-               AlertDialog b = ab.create();
+                AlertDialog b = ab.create();
                 b.show();
+                /*reciever = new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(Context context, Intent intent) {
+                        String action = intent.getAction();
+                        if(action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)){
+                            int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,BluetoothAdapter.ERROR);
+                            switch (state){
+                                case BluetoothAdapter.STATE_ON:
+                                    Log.d("aaa", "onReceive: 蓝牙已开启，请重新扫描设备");
+                            }
+                        }
+                    }
+                };*/
 
             }else{
 
@@ -123,4 +177,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+    @Override
+    public void onDestroy(){
+
+        super.onDestroy();
+        unregisterReceiver(bluetoothreciever);
+
+    }
+
 }
