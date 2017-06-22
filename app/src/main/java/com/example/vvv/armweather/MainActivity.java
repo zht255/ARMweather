@@ -1,50 +1,80 @@
 package com.example.vvv.armweather;
 
 
+import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+
+import android.bluetooth.BluetoothManager;
+import android.bluetooth.le.BluetoothLeScanner;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanResult;
 import android.content.BroadcastReceiver;
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.icu.lang.UCharacter;
-import android.icu.text.DateFormat;
-import android.icu.text.RelativeDateTimeFormatter;
-import android.icu.util.Calendar;
-import android.nfc.Tag;
+
+import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.ThemedSpinnerAdapter;
-import android.support.v7.widget.Toolbar;
+
 import android.util.Log;
 import android.view.Gravity;
+
 import android.view.Menu;
-import android.view.MenuInflater;
+
 import android.view.MenuItem;
-import android.view.View;
+
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.FieldPosition;
-import java.text.ParsePosition;
+import java.util.ArrayList;
 import java.util.Date;
-
-import static android.widget.Toast.makeText;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private BluetoothAdapter blueToothAdapter;
+
     @Override
     public void onStart(){
         super.onStart();
-        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+        /*filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);*/
+        filter.addAction(BluetoothDevice.ACTION_FOUND);
+
         registerReceiver(bluetoothreciever,filter);
     }
+     /*private BroadcastReceiver foundReciever = new BroadcastReceiver() {
+        private List<String> bluetoothName = new ArrayList<>();
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String s = null;
+            String action = intent.getAction();
+            if(action.equals(BluetoothDevice.ACTION_FOUND)){
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                bluetoothName.add(device.getName());
+                ListView lv =(ListView)findViewById(R.id.list_item);
+                lv.setAdapter(new ArrayAdapter<String>(MainActivity.this,R.layout.namelist,bluetoothName));
+                TextView t = (TextView)findViewById(R.id.arm);
+                t.setText(s + device.getName());
+            }
+        }
+    };*/
     private BroadcastReceiver bluetoothreciever = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            String s = null;
             String action = intent.getAction();
             if(action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)){
                 int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,BluetoothAdapter.ERROR);
@@ -65,7 +95,18 @@ public class MainActivity extends AppCompatActivity {
                     AlertDialog a = ad.create();
                     a.show();
                 }
-            }
+            }else if(action.equals(BluetoothDevice.ACTION_FOUND)){
+                BluetoothDevice device =intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
+                ad.setMessage(device.getName());
+                AlertDialog a = ad.create();
+                a.show();
+            }/*else if(action.equals(BluetoothAdapter.ACTION_DISCOVERY_STARTED)){
+                AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
+                ad.setMessage("开始了");
+                AlertDialog a = ad.create();
+                a.show();
+            }*/
         }
     };
 
@@ -75,11 +116,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
     }
-    /*public void initActionBar(){
-        Toolbar toolbar = (Toolbar)findViewById(R.id.my_toolbar);
-        toolbar.setTitle("ARM weather");
-        setSupportActionBar(toolbar);
-    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
@@ -87,12 +123,23 @@ public class MainActivity extends AppCompatActivity {
         return true;
 
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         int id = item.getItemId();
         switch(id){
             case R.id.scan:
+                blueToothAdapter = BluetoothAdapter.getDefaultAdapter();
                 //扫描蓝牙方法
+                if(item.getTitle().toString()=="Scan" ){
+                    if(blueToothAdapter.isEnabled()) {
+                        item.setTitle("Stop");
+                    }
+                }else{
+                    item.setTitle("Stop");
+                    blueToothAdapter.cancelDiscovery();
+                    break;
+                }
                 scanBlue();
                 break;
             case R.id.about:
@@ -126,7 +173,32 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+
     }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 1: {
+                // 如果请求被取消，则结果数组为空。
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
+                    ad.setMessage("已经获取权限");
+                    AlertDialog a = ad.create();
+                    a.show();
+                } else {
+                    AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
+                    ad.setMessage("未获取到权限");
+                    AlertDialog a = ad.create();
+                    a.show();
+                }
+                return;
+            }
+        }
+    }
+
+
     private void scanBlue(){
         //获取蓝牙适配器
         blueToothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -154,34 +226,38 @@ public class MainActivity extends AppCompatActivity {
                 });
                 AlertDialog b = ab.create();
                 b.show();
-                /*reciever = new BroadcastReceiver() {
-                    @Override
-                    public void onReceive(Context context, Intent intent) {
-                        String action = intent.getAction();
-                        if(action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)){
-                            int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,BluetoothAdapter.ERROR);
-                            switch (state){
-                                case BluetoothAdapter.STATE_ON:
-                                    Log.d("aaa", "onReceive: 蓝牙已开启，请重新扫描设备");
-                            }
-                        }
-                    }
-                };*/
 
-            }else{
 
+            }else {
+                blueToothAdapter.startDiscovery();
+                checkBlePermission();
             }
         }else{
+
             AlertDialog.Builder ad = new AlertDialog.Builder(this);
             ad.setMessage("该设备不支持蓝牙功能！");
         }
 
     }
-    @Override
+    public void checkBlePermission() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                    1);
+        } else {
+            AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
+            ad.setMessage("正在申请权限");
+        }
+    }
+
     public void onDestroy(){
 
         super.onDestroy();
         unregisterReceiver(bluetoothreciever);
+        /*unregisterReceiver(foundReciever);*/
 
     }
 
