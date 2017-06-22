@@ -39,12 +39,13 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private BluetoothAdapter blueToothAdapter;
-
     @Override
     public void onStart(){
         super.onStart();
@@ -52,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
         filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
         /*filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);*/
         filter.addAction(BluetoothDevice.ACTION_FOUND);
-
         registerReceiver(bluetoothreciever,filter);
     }
      /*private BroadcastReceiver foundReciever = new BroadcastReceiver() {
@@ -123,9 +123,25 @@ public class MainActivity extends AppCompatActivity {
         return true;
 
     }
+    class B extends BroadcastReceiver{
+        private MenuItem item;
+        public B(MenuItem item){
+            this.item = item;
+        }
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            item.setTitle("Scan");
+        }
+    }
+
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
+    public boolean onOptionsItemSelected(MenuItem item) {
+        MenuItem i = item;
+        IntentFilter inf = new IntentFilter();
+        inf.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        B b1 = new B(i);
+        registerReceiver(b1,inf);
         int id = item.getItemId();
         switch(id){
             case R.id.scan:
@@ -136,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
                         item.setTitle("Stop");
                     }
                 }else{
-                    item.setTitle("Stop");
+                    item.setTitle("Scan");
                     blueToothAdapter.cancelDiscovery();
                     break;
                 }
