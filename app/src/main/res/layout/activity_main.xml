@@ -5,6 +5,8 @@
     android:name="@+id/main"
     android:orientation="horizontal">
    <ListView
+       android:dividerHeight="1px"
+       android:divider="#000000"
        android:id="@+id/list"
        android:layout_width="match_parent"
        android:layout_height="wrap_content"></ListView>
