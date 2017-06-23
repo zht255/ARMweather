@@ -45,6 +45,8 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,6 +59,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -80,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
     private BroadcastReceiver bluetoothreciever = new BroadcastReceiver() {
 
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, Intent intent){
             String action = intent.getAction();
             if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
                 int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
@@ -109,11 +112,18 @@ public class MainActivity extends AppCompatActivity {
                 ArrayAdapter<String> a = new ArrayAdapter<String>(MainActivity.this, R.layout.namelist,R.id.Name,l);
                 list.setAdapter(a);
                 list.setDividerHeight(1);
-                AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
-                ad.setMessage();
-              /*  BluetoothDevice b = blueToothAdapter.getRemoteDevice(device.getAddress());
+                BluetoothDevice b = blueToothAdapter.getRemoteDevice(device.getAddress());
                 b.createBond();
-                */
+               /* byte[] toSend = "hello".getBytes();
+                UUID uuid = UUID.fromString("00001001-00001---8000-00805F9B34FB");*/
+                /*try {
+                    BluetoothSocket socket = b.createInsecureRfcommSocketToServiceRecord(uuid);
+                    OutputStream os = socket.getOutputStream();
+                    os.write(toSend);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }*/
+
                /* list.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
