@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 
 import android.bluetooth.BluetoothManager;
+import android.bluetooth.le.AdvertiseData;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
@@ -17,6 +18,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -27,31 +29,46 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 
+import android.view.LayoutInflater;
 import android.view.Menu;
 
 import android.view.MenuItem;
 
+import android.view.View;
+import android.widget.Adapter;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
 
 public class MainActivity extends AppCompatActivity {
-
+    private static int count = 0;
+    Map<String,Object> map = new HashMap<>();
+    private static SimpleAdapter adapter;
     private BluetoothAdapter blueToothAdapter;
+    private static ListView list;
+
     @Override
     public void onStart(){
         super.onStart();
         IntentFilter filter = new IntentFilter();
         filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
-        /*filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);*/
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         filter.addAction(BluetoothDevice.ACTION_FOUND);
         registerReceiver(bluetoothreciever,filter);
     }
@@ -72,9 +89,9 @@ public class MainActivity extends AppCompatActivity {
         }
     };*/
     private BroadcastReceiver bluetoothreciever = new BroadcastReceiver() {
+
         @Override
         public void onReceive(Context context, Intent intent) {
-            String s = null;
             String action = intent.getAction();
             if(action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)){
                 int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,BluetoothAdapter.ERROR);
@@ -96,25 +113,49 @@ public class MainActivity extends AppCompatActivity {
                     a.show();
                 }
             }else if(action.equals(BluetoothDevice.ACTION_FOUND)){
-                BluetoothDevice device =intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
-                ad.setMessage(device.getName());
+                count = count + 1;
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                if(count == 1) {
+                    list = (ListView) findViewById(R.id.list);
+                    List<Map<String, Object>> li = new ArrayList<>();
+                    map = new HashMap<>();
+                    map.put("Name", device.getName());
+                    map.put("Mac", device.getAddress());
+                    li.add(map);
+                    adapter = new SimpleAdapter(MainActivity.this, li, R.layout.namelist, new String[]{"Name", "Mac"}, new int[]{R.id.Name, R.id.Mac});
+                    list.setAdapter(adapter);
+                /*AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
+                ad.setMessage(device.getName() + "\n" +  device.getAddress() );
                 AlertDialog a = ad.create();
-                a.show();
-            }/*else if(action.equals(BluetoothAdapter.ACTION_DISCOVERY_STARTED)){
-                AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
-                ad.setMessage("开始了");
-                AlertDialog a = ad.create();
-                a.show();
-            }*/
+                a.show();*/
+                /*if(device.getName()!=null){
+                    ad.setMessage(device.getName() + "\n" +  device.getAddress() );
+                    AlertDialog a = ad.create();
+                    a.show();
+                }else{
+                    ad.setMessage(device.getAddress());
+                    AlertDialog a = ad.create();
+                    a.show();
+                }*/
+                }else{
+                    TextView tv = new TextView(MainActivity.this);
+                    tv.setText(device.getName() + "\n\n" + device.getName());
+                    list.addFooterView(tv);
+                }
+            }else if(action.equals(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)){
+                count = 0;
+            }
+
         }
     };
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
     }
 
     @Override
