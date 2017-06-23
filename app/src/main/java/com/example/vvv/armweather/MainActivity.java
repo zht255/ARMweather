@@ -57,9 +57,9 @@ import java.util.TimerTask;
 
 
 public class MainActivity extends AppCompatActivity {
-    private static int count = 0;
+    /*private static int count = 0;*/
     Map<String,Object> map = new HashMap<>();
-    private static SimpleAdapter adapter;
+    /*private static SimpleAdapter adapter;*/
     private BluetoothAdapter blueToothAdapter;
     private static ListView list;
 
@@ -112,10 +112,15 @@ public class MainActivity extends AppCompatActivity {
                     AlertDialog a = ad.create();
                     a.show();
                 }
-            }else if(action.equals(BluetoothDevice.ACTION_FOUND)){
-                count = count + 1;
+            }else if(action.equals(BluetoothDevice.ACTION_FOUND)) {
+                /*count = count + 1;*/
+                list = (ListView)findViewById(R.id.list);
+                ArrayList<String> l = new ArrayList<>();
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if(count == 1) {
+                l.add("\n" + device.getName() + "\n" + device.getAddress() + "\n");
+                ArrayAdapter<String> a = new ArrayAdapter<String>(MainActivity.this,R.layout.namelist,R.id.Name,l);
+                list.setAdapter(a);
+               /* if(count == 1) {
                     list = (ListView) findViewById(R.id.list);
                     List<Map<String, Object>> li = new ArrayList<>();
                     map = new HashMap<>();
@@ -124,30 +129,22 @@ public class MainActivity extends AppCompatActivity {
                     li.add(map);
                     adapter = new SimpleAdapter(MainActivity.this, li, R.layout.namelist, new String[]{"Name", "Mac"}, new int[]{R.id.Name, R.id.Mac});
                     list.setAdapter(adapter);
-                /*AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
-                ad.setMessage(device.getName() + "\n" +  device.getAddress() );
-                AlertDialog a = ad.create();
-                a.show();*/
-                /*if(device.getName()!=null){
-                    ad.setMessage(device.getName() + "\n" +  device.getAddress() );
-                    AlertDialog a = ad.create();
-                    a.show();
-                }else{
-                    ad.setMessage(device.getAddress());
-                    AlertDialog a = ad.create();
-                    a.show();
-                }*/
+
                 }else{
                     TextView tv = new TextView(MainActivity.this);
-                    tv.setText(device.getName() + "\n\n" + device.getName());
+                    String name = device.getName();
+                    String mac = device.getAddress();
+                    tv.setText(name + "\n\n" + mac);
                     list.addFooterView(tv);
                 }
             }else if(action.equals(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)){
-                count = 0;
+                 count = 0;
+            }*/
             }
-
         }
     };
+
+
 
 
 
