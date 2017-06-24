@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:name="@+id/androidMenu">
+    <item
+        android:id="@+id/scan"
+        android:orderInCategory="1"
+        app:showAsAction="ifRoom|withText"
+        android:title="Scan" />
+    <item
+        android:id="@+id/about"
+        android:title="关于"
+        android:orderInCategory="100"
+        app:showAsAction="never|withText" />
+    <item
+        android:id="@+id/date"
+        android:title="日期"
+        android:orderInCategory="101"
+        app:showAsAction="never|withText"/>
+</menu>

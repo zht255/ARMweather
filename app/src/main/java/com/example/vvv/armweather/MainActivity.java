@@ -5,12 +5,6 @@ import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 
-import android.bluetooth.BluetoothManager;
-import android.bluetooth.BluetoothSocket;
-import android.bluetooth.le.AdvertiseData;
-import android.bluetooth.le.BluetoothLeScanner;
-import android.bluetooth.le.ScanCallback;
-import android.bluetooth.le.ScanResult;
 import android.content.BroadcastReceiver;
 
 import android.content.Context;
@@ -19,7 +13,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 
 import android.content.pm.PackageManager;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -27,39 +20,23 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import android.util.Log;
 import android.view.Gravity;
 
-import android.view.LayoutInflater;
 import android.view.Menu;
 
 import android.view.MenuItem;
 
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.UUID;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -109,28 +86,20 @@ public class MainActivity extends AppCompatActivity {
                 list = (ListView) findViewById(R.id.list);
                 final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 l.add(device.getName() + "\n" + device.getAddress());
-                ArrayAdapter<String> a = new ArrayAdapter<String>(MainActivity.this, R.layout.namelist,R.id.Name,l);
+                ArrayAdapter<String> a = new ArrayAdapter<>(MainActivity.this, R.layout.namelist,R.id.Name,l);
                 list.setAdapter(a);
                 list.setDividerHeight(1);
-                BluetoothDevice b = blueToothAdapter.getRemoteDevice(device.getAddress());
-                b.createBond();
-               /* byte[] toSend = "hello".getBytes();
-                UUID uuid = UUID.fromString("00001001-00001---8000-00805F9B34FB");*/
-                /*try {
-                    BluetoothSocket socket = b.createInsecureRfcommSocketToServiceRecord(uuid);
-                    OutputStream os = socket.getOutputStream();
-                    os.write(toSend);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }*/
-
-               /* list.setOnClickListener(new View.OnClickListener() {
+                list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
-                    public void onClick(View v) {
-                        BluetoothDevice b = blueToothAdapter.getRemoteDevice(device.getAddress());
-                        b.createBond();
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Intent intent = new Intent(MainActivity.this,WeatherActivity.class);
+                        String name = l.get(position);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("Ble",name);
+                        intent.putExtras(bundle);
+                        startActivity(intent);
                     }
-                });*/
+                });
             }else if(action.equals(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)){
                 l.clear();
             }
