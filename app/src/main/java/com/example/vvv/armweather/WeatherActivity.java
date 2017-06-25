@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -43,7 +44,40 @@ public class WeatherActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    connect(address);
+                    device = bluetoothAdapter.getRemoteDevice(address);
+                    final BluetoothSocket socket = device.createInsecureRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
+                    socket.connect();
+                    final Button b1 = (Button)findViewById(R.id.close);
+                    b1.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            try {
+                                socket.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                    String s = "info\n";
+                    OutputStream os = socket.getOutputStream();
+                    os.write(s.getBytes());
+                    InputStream is = socket.getInputStream();
+                    InputStream is1 = is;
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(is1));
+                    StringBuilder sb = new StringBuilder();
+                    String input = null;
+
+                    while (!(input = reader.readLine()).equals("OK")) {
+                        /*socket.close();*/
+                        sb.append(input);
+                    }
+                    String string = sb.toString();
+                    String[] info = string.split("\n");
+                    AlertDialog.Builder ac = new AlertDialog.Builder(WeatherActivity.this);
+                    ac.setMessage(info[0]);
+                    AlertDialog ag = ac.create();
+                    ag.show();
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -56,53 +90,44 @@ public class WeatherActivity extends AppCompatActivity {
         a.show();*/
 
     }
-    public void connect(String address)throws IOException{
+    public String connect(String address)throws IOException{
         device = bluetoothAdapter.getRemoteDevice(address);
         BluetoothSocket socket = device.createInsecureRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
         socket.connect();
-        if (socket.isConnected()) {
+        /*if (socket.isConnected()) {
             AlertDialog.Builder ad = new AlertDialog.Builder(WeatherActivity.this);
             ad.setMessage("Connected");
-            AlertDialog a = ad.create();
-            a.show();
+
             ad.setPositiveButton("×", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
                 }
             });
-            String s = Socket(socket);
-            AlertDialog.Builder adb = new AlertDialog.Builder(WeatherActivity.this);
-            adb.setMessage(s);
-            AlertDialog dialog = adb.create();
-            dialog.show(); 
-            
-        }
+            AlertDialog a = ad.create();
+            a.show();
+        }*/
 
+       /* StringBuilder s = Socket(socket);
+        TextView t = (TextView)findViewById(R.id.temp);
+        t.setText(s);*/
+        String str = Socket(socket);
+        return str;
     }
     public String Socket(BluetoothSocket socket)throws IOException{
-        String s = "info";
-        String  sbs = null;
+        String s = "info\n";
         OutputStream os = socket.getOutputStream();
         os.write(s.getBytes());
-        InputStream is = null;
-        try {
-            is = socket.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-            StringBuilder sb = new StringBuilder();
-            String input;
-            while((input = reader.readLine()) != null){
-                sb.append(input);
-            }
-            sbs = sb.toString();
-            
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }finally {
-            is.close();
+        InputStream is = socket.getInputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        StringBuilder sb = new StringBuilder();
+        String input = null;
+
+        while ((input = reader.readLine()) != null) {
+            sb.append(input);
         }
-        return sbs;
+        is.close();
+        return sb.toString();
 
     }
     @Override

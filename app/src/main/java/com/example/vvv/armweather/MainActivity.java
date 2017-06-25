@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         IntentFilter filter = new IntentFilter();
         filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
-        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
         filter.addAction(BluetoothDevice.ACTION_FOUND);
         registerReceiver(bluetoothreciever, filter);
     }
@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(intent);
                     }
                 });
-            }else if(action.equals(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)){
+            }else if(action.equals(BluetoothAdapter.ACTION_DISCOVERY_STARTED)){
                 l.clear();
             }
         }
