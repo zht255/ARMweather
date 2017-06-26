@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/IPdialog">
+    <EditText
+            android:id="@+id/newIP"
+            android:hint="new IP"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+        android:layout_marginBottom="3dp"
+            />
+    <EditText
+        android:id="@+id/newPort"
+        android:hint="new Port"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="3dp"/>
+    <Button
+        android:text="启用设置"
+        android:id="@+id/useIPset"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="3dp"/>
+</LinearLayout>

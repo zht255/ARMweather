@@ -5,38 +5,55 @@
     <TextView
         android:id="@+id/Ssid"
         android:layout_width="match_parent"
-        android:layout_height="60dp" />
+        android:layout_height="60dp"
+        android:text="WIFI Ssid"
+        android:gravity="center"
+        android:layout_marginBottom="8dp"/>
     <TextView
-        android:id="@+id/server"
+        android:id="@+id/Server"
         android:layout_width="match_parent"
-        android:layout_height="60dp" />
+        android:layout_height="60dp"
+        android:layout_below="@+id/Ssid"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="8dp"
+        android:text="Server"
+        android:gravity="center"/>
     <TextView
-        android:id="@+id/temp"
+        android:id="@+id/Temp"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:text="temp"
-        android:gravity="center" />
+        android:gravity="center"
+        android:layout_above="@+id/Air"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="8dp" />
     <TextView
-        android:id="@+id/hum"
+        android:id="@+id/Hum"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:text="HUM"
         android:gravity="center"
-        android:layout_below="@+id/press" />
+        android:layout_above="@+id/linearLayout2"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="8dp" />
     <TextView
-        android:id="@+id/press"
+        android:id="@+id/Press"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:text="PRESS"
         android:gravity="center"
-        android:layout_below="@+id/air" />
+        android:layout_marginBottom="8dp"
+        android:layout_above="@+id/Hum"
+        android:layout_alignParentStart="true" />
     <TextView
-        android:id="@+id/air"
+        android:id="@+id/Air"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:text="AIR"
         android:gravity="center"
-        android:layout_below="@+id/temp" />
+        android:layout_centerVertical="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="8dp"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -44,23 +61,30 @@
         android:paddingBottom="5dp"
         android:paddingLeft="3dp"
         android:paddingRight="3dp"
-        android:weightSum="2">
+        android:weightSum="2"
+        android:id="@+id/linearLayout2">
         <Button
             android:id="@+id/connect"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="获取连接"
-            android:background="@drawable/shape"
             android:layout_weight="1"
             android:layout_marginRight="1dp"/>
-        <Button
+       <!-- <Button
             android:id="@+id/close"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="断开连接"
-            android:background="@drawable/shape"
-            android:layout_marginLeft="1dp" />
+            android:layout_marginLeft="1dp"
+            android:layout_marginRight="1dp"/>-->
+        <Button
+            android:id="@+id/set"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="1dp"
+            android:text="设置" />
 
         </LinearLayout>
 

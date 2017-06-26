@@ -172,20 +172,13 @@ public class MainActivity extends AppCompatActivity {
                 AlertDialog a = bd.create();
                 a.show();
                 break;
-            case R.id.date:
+            case R.id.Date:
                 //日期
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("日期");
                 Date date = new Date();
-                builder.setMessage(date.toString());
-                builder.setPositiveButton("×", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                AlertDialog b = builder.create();
-                b.show();
+                AlertDialog.Builder ad = new AlertDialog.Builder(MainActivity.this);
+                ad.setMessage((date.toString()));
+                AlertDialog al = ad.create();
+                al.show();
                 break;
         }
         return super.onOptionsItemSelected(item);

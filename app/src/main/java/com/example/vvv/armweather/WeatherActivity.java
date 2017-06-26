@@ -39,6 +39,17 @@ public class WeatherActivity extends AppCompatActivity {
         String s = bundle.getString("Ble");
         String[] ns = s.split("\n");
         final String address = ns[1];
+        Button bset = (Button)findViewById(R.id.set);
+        bset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(WeatherActivity.this,ServerActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("Ble",address);
+                intent.putExtras(bundle);
+                startActivity(intent);
+            }
+        });
         Button b = (Button)findViewById(R.id.connect);
         b.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,17 +58,6 @@ public class WeatherActivity extends AppCompatActivity {
                     device = bluetoothAdapter.getRemoteDevice(address);
                     final BluetoothSocket socket = device.createInsecureRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
                     socket.connect();
-                    final Button b1 = (Button)findViewById(R.id.close);
-                    b1.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            try {
-                                socket.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
                     String s = "info\n";
                     OutputStream os = socket.getOutputStream();
                     os.write(s.getBytes());
@@ -68,17 +68,42 @@ public class WeatherActivity extends AppCompatActivity {
                     String input = null;
 
                     while (!(input = reader.readLine()).equals("OK")) {
-                        /*socket.close();*/
-                        sb.append(input);
+                        sb.append(input + "\n");
                     }
                     String string = sb.toString();
                     String[] info = string.split("\n");
-                    AlertDialog.Builder ac = new AlertDialog.Builder(WeatherActivity.this);
-                    ac.setMessage(info[0]);
+                    TextView t1 = (TextView)findViewById(R.id.Ssid);
+                    TextView t2 = (TextView)findViewById(R.id.Server);
+                    TextView t3 = (TextView)findViewById(R.id.Temp);
+                    TextView t4 = (TextView)findViewById(R.id.Hum);
+                    TextView t5 = (TextView)findViewById(R.id.Press);
+                    TextView t6 = (TextView)findViewById(R.id.Air);
+                    t1.setText(info[0].split(",")[0]);
+                    t2.setText(info[1].split(",")[0]);
+                    t3.setText(info[2]);
+                    t4.setText(info[3]);
+                    t5.setText(info[4]);
+                    t6.setText(info[5]);
+                    /*AlertDialog.Builder ac = new AlertDialog.Builder(WeatherActivity.this);
+                    ac.setMessage(info[5]);
                     AlertDialog ag = ac.create();
-                    ag.show();
+                    ag.show();*/
+                    os.close();
+                    is.close();
+                    socket.close();
+                   /* final Button b1 = (Button) findViewById(R.id.close);
+                    b1.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            try {
+                                socket.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });*/
 
-                } catch (IOException e) {
+                } catch(IOException e){
                     e.printStackTrace();
                 }
             }
@@ -88,7 +113,6 @@ public class WeatherActivity extends AppCompatActivity {
         ad.setMessage(ns[1]);
         AlertDialog a = ad.create();
         a.show();*/
-
     }
     public String connect(String address)throws IOException{
         device = bluetoothAdapter.getRemoteDevice(address);
